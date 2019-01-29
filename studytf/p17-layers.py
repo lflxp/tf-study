@@ -1,4 +1,4 @@
-#!/root/tf/venv/bin/python
+#!~/tf/venv/bin/python
 # -*- coding: UTF-8 -*-
 import tensorflow as tf
 import numpy as np
