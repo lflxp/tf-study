@@ -48,7 +48,7 @@ sess = tf.Session()
 # important step
 sess.run(tf.global_variables_initializer())
 
-for i in range(1000):
+for i in range(2000):
     batch_xs,batch_ys = mnist.train.next_batch(100) # 将数据100个一次进行训练
     sess.run(train_step,feed_dict={xs:batch_xs,ys:batch_ys})
     if i%50 == 0:
