@@ -5,6 +5,7 @@
 # 分类
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+from tensorflow.python.framework import graph_util
 
 # number 1 to 10 data
 mnist = input_data.read_data_sets('MNIST_data',one_hot=True)
@@ -12,7 +13,9 @@ mnist = input_data.read_data_sets('MNIST_data',one_hot=True)
 def compute_accuracy(v_xs,v_ys):
     global prediction
     y_pre = sess.run(prediction,feed_dict={xs:v_xs,keep_prob:1})
-    correct_prediction = tf.equal(tf.argmax(y_pre,1),tf.argmax(v_ys,1))
+    prediction_labels = tf.argmax(y_pre,axis=1,name="output")
+    correct_prediction = tf.equal(prediction_labels,tf.argmax(v_ys,1))
+#     correct_prediction = tf.equal(tf.argmax(y_pre,1),tf.argmax(v_ys,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
     result = sess.run(accuracy,feed_dict={xs:v_xs,ys:v_ys})
     return result # 输出百分比
@@ -78,7 +81,7 @@ h_fc1_drop = tf.nn.dropout(h_fc1,keep_prob)
 ## func2 layer ##
 W_fc2 = weight_variable([1024, 10])
 b_fc2 = bias_variable([10])
-prediction = tf.nn.softmax(tf.matmul(h_fc1_drop,W_fc2) + b_fc2) # softmax 算概论 分类
+prediction = tf.nn.softmax(tf.matmul(h_fc1_drop,W_fc2) + b_fc2,name="softmax") # softmax 算概论 分类
 # prediction = tf.nn.softmax(tf.matmul(h_fc1,W_fc2) + b_fc2) # softmax 算概论 分类
 
 # the error between prediction and real data
@@ -99,6 +102,14 @@ for i in range(2000):
         # Save
         variables = tf.global_variables()
         saver = tf.train.Saver(variables)
+        # 另外，如果想要在1000次迭代后，再保存模型，只需设置global_step参数即可：
+        # saver.save(sess, './checkpoint_dir/MyModel',global_step=1000)
+
+        # 在实际训练中，我们可能会在每1000次迭代中保存一次模型数据，但是由于图是不变的，没必要每次都去保存，可以通过如下方式指定不保存图：
+        # saver.save(sess, './checkpoint_dir/MyModel',global_step=step,write_meta_graph=False)
+
+        # 另一种比较实用的是，如果你希望每2小时保存一次模型，并且只保存最近的5个模型文件：
+        # tf.train.Saver(max_to_keep=5, keep_checkpoint_every_n_hours=2)
         save_path = saver.save(sess,'my_net/save_net.ckpt')
         print('Save to path',save_path)
         print(compute_accuracy(mnist.test.images,mnist.test.labels))
@@ -111,6 +122,12 @@ print '最终的测试正确率： {0}'.format(a)
 tf.train.write_graph(sess.graph_def,'graph','soft.ph',False)
 
 # Save model
-builder = tf.saved_model.builder.SavedModelBuilder('p27-model/')#保存前需要保证这个文件夹为空或者不存在
-builder.add_meta_graph_and_variables(sess,[tf.saved_model.tag_constants.TRAINING])
-builder.save()
+# builder = tf.saved_model.builder.SavedModelBuilder('p27-model/')#保存前需要保证这个文件夹为空或者不存在
+# builder.add_meta_graph_and_variables(sess,[tf.saved_model.tag_constants.TRAINING])
+# builder.save()
+
+# Save model2
+constant_graph = graph_util.convert_variables_to_constants(sess,sess.graph_def,["output"])
+pb_file_path = 'p27-model.pb'
+with tf.gfile.FastGFile(pb_file_path, mode='wb') as f:
+        f.write(constant_graph.SerializeToString())

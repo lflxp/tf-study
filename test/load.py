@@ -48,3 +48,48 @@ with tf.Session(graph=graph) as sess:
 # 来源：CSDN 
 # 原文：https://blog.csdn.net/tengxing007/article/details/56672556 
 # 版权声明：本文为博主原创文章，转载请附上博文链接！
+
+# https://blog.csdn.net/huachao1001/article/details/78501928
+# 导入训练好的模型
+# 在第1小节中我们介绍过，tensorflow将图和变量数据分开保存为不同的文件。因此，在导入模型时，也要分为2步：构造网络图和加载参数
+
+# 3.1 构造网络图
+# 一个比较笨的方法是，手敲代码，实现跟模型一模一样的图结构。其实，我们既然已经保存了图，那就没必要在去手写一次图结构代码。
+
+# saver=tf.train.import_meta_graph('./checkpoint_dir/MyModel-1000.meta')
+# 1
+# 上面一行代码，就把图加载进来了
+
+# 3.2 加载参数
+# 仅仅有图并没有用，更重要的是，我们需要前面训练好的模型参数（即weights、biases等），本文第2节提到过，变量值需要依赖于Session，因此在加载参数时，先要构造好Session：
+
+# import tensorflow as tf
+# with tf.Session() as sess:
+#   new_saver = tf.train.import_meta_graph('./checkpoint_dir/MyModel-1000.meta')
+#   new_saver.restore(sess, tf.train.latest_checkpoint('./checkpoint_dir'))
+# 1
+# 2
+# 3
+# 4
+# 此时，W1和W2加载进了图，并且可以被访问：
+
+# import tensorflow as tf
+# with tf.Session() as sess:    
+#     saver = tf.train.import_meta_graph('./checkpoint_dir/MyModel-1000.meta')
+#     saver.restore(sess,tf.train.latest_checkpoint('./checkpoint_dir'))
+#     print(sess.run('w1:0'))
+# ##Model has been restored. Above statement will print the saved value
+# 1
+# 2
+# 3
+# 4
+# 5
+# 6
+# 执行后，打印如下：
+
+# [ 0.51480412 -0.56989086]
+# --------------------- 
+# 作者：huachao1001 
+# 来源：CSDN 
+# 原文：https://blog.csdn.net/huachao1001/article/details/78501928 
+# 版权声明：本文为博主原创文章，转载请附上博文链接！
