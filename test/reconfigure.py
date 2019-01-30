@@ -32,7 +32,7 @@ def recognize(jpg_path, pb_file_path):
             prediction_labels = np.argmax(img_out_softmax, axis=1)
             print "label:",prediction_labels
 
-recognize("./pic/cat2.jpg", "train2.pb")
+recognize("./pic/dog5.jpg", "train2.pb")
 # --------------------- 
 # 作者：ppplinday 
 # 来源：CSDN 

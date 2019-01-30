@@ -11,7 +11,7 @@ from skimage import io, transform
 from tensorflow.python.framework import graph_util
 import collections
 
-path = '/opt/gopath/src/github.com/lflxp/tf-study/picture/'
+path = './picture/'
 w = 224
 h = 224
 c = 3
