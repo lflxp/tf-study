@@ -6,6 +6,9 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 from tensorflow.python.framework import graph_util
+import PIL.Image as Image
+from skimage import io, transform
+import numpy as np
 
 # number 1 to 10 data
 mnist = input_data.read_data_sets('MNIST_data',one_hot=True)
@@ -95,13 +98,13 @@ sess = tf.Session()
 # important step
 sess.run(tf.global_variables_initializer())
 
-for i in range(2000):
+for i in range(200):
     batch_xs,batch_ys = mnist.train.next_batch(100) # 将数据100个一次进行训练
     sess.run(train_step,feed_dict={xs:batch_xs,ys:batch_ys,keep_prob:0.5}) # 防止过拟合只在train过程中生效,1为不随机丢掉数据
     if i%50 == 0:
         # Save
-        variables = tf.global_variables()
-        saver = tf.train.Saver(variables)
+        # variables = tf.global_variables()
+        # saver = tf.train.Saver(variables)
         # 另外，如果想要在1000次迭代后，再保存模型，只需设置global_step参数即可：
         # saver.save(sess, './checkpoint_dir/MyModel',global_step=1000)
 
@@ -110,8 +113,8 @@ for i in range(2000):
 
         # 另一种比较实用的是，如果你希望每2小时保存一次模型，并且只保存最近的5个模型文件：
         # tf.train.Saver(max_to_keep=5, keep_checkpoint_every_n_hours=2)
-        save_path = saver.save(sess,'my_net/save_net.ckpt')
-        print('Save to path',save_path)
+        # save_path = saver.save(sess,'my_net/save_net.ckpt')
+        # print('Save to path',save_path)
         print(compute_accuracy(mnist.test.images,mnist.test.labels))
 
 # finish
@@ -127,7 +130,15 @@ tf.train.write_graph(sess.graph_def,'graph','soft.ph',False)
 # builder.save()
 
 # Save model2
-constant_graph = graph_util.convert_variables_to_constants(sess,sess.graph_def,["output"])
-pb_file_path = 'p27-model.pb'
-with tf.gfile.FastGFile(pb_file_path, mode='wb') as f:
-        f.write(constant_graph.SerializeToString())
+# constant_graph = graph_util.convert_variables_to_constants(sess,sess.graph_def,["output"])
+# pb_file_path = 'p27-model.pb'
+# with tf.gfile.FastGFile(pb_file_path, mode='wb') as f:
+#         f.write(constant_graph.SerializeToString())
+
+# 验证结果
+img = io.imread('./pic/cat2.jpg')
+img = transform.resize(img,(28,28,1))
+y_pre = sess.run(prediction,feed_dict={xs:img,keep_prob:1})
+# prediction_labels = tf.argmax(y_pre,axis=1,name="output")
+# what = sess.run(prediction_labels,feed_dict={xs:np.reshape(img,[-1,28,28,3])})
+print(y_pre)

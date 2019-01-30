@@ -17,7 +17,7 @@ def recognize(jpg_path, pb_file_path):
             init = tf.global_variables_initializer()
             sess.run(init)
 
-            input_x = sess.graph.get_tensor_by_name("x_input:0")
+            input_x = sess.graph.get_tensor_by_name("input:0")
             print input_x
             out_softmax = sess.graph.get_tensor_by_name("softmax:0")
             print out_softmax
@@ -32,7 +32,7 @@ def recognize(jpg_path, pb_file_path):
             prediction_labels = np.argmax(img_out_softmax, axis=1)
             print "label:",prediction_labels
 
-recognize("pic/9.png", "p27-model.pb")
+recognize("./pic/cat2.jpg", "train2.pb")
 # --------------------- 
 # 作者：ppplinday 
 # 来源：CSDN 
