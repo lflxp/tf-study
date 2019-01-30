@@ -40,8 +40,8 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
 
 # define placeholder for inputs to network
-xs = tf.placeholder(tf.float32,[None,784]) # 28x28
-ys = tf.placeholder(tf.float32,[None,10]) # 28x28
+xs = tf.placeholder(tf.float32,[None,784],name='x_input') # 28x28
+ys = tf.placeholder(tf.float32,[None,10],name='y_input') # 28x28
 keep_prob = tf.placeholder(tf.float32)
 # 第一个值 -1代表了batch ，意思是由多少个图片， 里面含义是有n个28*28， 最后一个数字是（channel,）通道为1的图片， n根据传入的参数自己匹配
 x_image = tf.reshape(xs,[-1,28,28,1])
