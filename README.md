@@ -5,7 +5,7 @@ tensorflow python study
 study tensorflow by youtube video
 and understand how and why this code
 
-# therom
+# Theory
 
 ![](https://github.com/lflxp/tf-study/blob/master/p27-conv1.png)
 ![](https://github.com/lflxp/tf-study/blob/master/p27-conv.png)
