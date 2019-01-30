@@ -21,11 +21,10 @@ def tf.name_scope('input'): #输入采用了name_scope的形式,也可以不采�
 conv1 = tf.layers.conv2d(
     输入= x_image,
     filters = 16,#输出空间的维数
-    kernel_size =(5,5),#二维卷积窗口的高度和宽度strides =(
-    1,1), #沿高度和宽度的卷积步长
+    kernel_size =(5,5),#二维卷积窗口的高度和宽度
+    strides =(1,1), #沿高度和宽度的卷积步长
     padding ='same',#相同或有效
-    activation = tf .nn.relu 
-)#[ -  1,28,28,16] #max 
+    activation = tf.nn.relu) #[ -  1,28,28,16] #max 
 # 池 
 pool1 = tf.layers.max_pooling2d(
     inputs = conv1,

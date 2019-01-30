@@ -92,14 +92,25 @@ sess = tf.Session()
 # important step
 sess.run(tf.global_variables_initializer())
 
-for i in range(200):
+for i in range(2000):
     batch_xs,batch_ys = mnist.train.next_batch(100) # 将数据100个一次进行训练
     sess.run(train_step,feed_dict={xs:batch_xs,ys:batch_ys,keep_prob:0.5}) # 防止过拟合只在train过程中生效,1为不随机丢掉数据
     if i%50 == 0:
+        # Save
+        variables = tf.global_variables()
+        saver = tf.train.Saver(variables)
+        save_path = saver.save(sess,'my_net/save_net.ckpt')
+        print('Save to path',save_path)
         print(compute_accuracy(mnist.test.images,mnist.test.labels))
 
-# Save
-saver = tf.train.Saver()
+# finish
+a = compute_accuracy(mnist.test.images,mnist.test.labels)
+print '最终的测试正确率： {0}'.format(a)
 
-save_path = saver.save(sess,'my_net/save_net.ckpt')
-print('Save to path',save_path)
+# Graph
+tf.train.write_graph(sess.graph_def,'graph','soft.ph',False)
+
+# Save model
+builder = tf.saved_model.builder.SavedModelBuilder('p27-model/')#保存前需要保证这个文件夹为空或者不存在
+builder.add_meta_graph_and_variables(sess,[tf.saved_model.tag_constants.TRAINING])
+builder.save()

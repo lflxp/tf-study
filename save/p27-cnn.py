@@ -108,7 +108,7 @@ for i in range(10):
 
 # 保存参数
 # Path = 'my_net/cnn.ckpt'
-Path = './Model/'
+Path = 'Model/'
 builder = tf.saved_model.Builder(Path)
 # 保存整张网络及其变量，这种方法是可以保存多张网络的，在此不作介绍，可自行了解
 builder.add_meta_graph_and_variables(sess,[tf.saved_model.tag_constants.TRAINING])

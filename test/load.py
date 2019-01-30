@@ -23,13 +23,13 @@ with tf.Session(graph=graph) as sess:
     softmax_tensor = sess.graph.get_tensor_by_name('layer/final_result:0')
     x = sess.graph.get_tensor_by_name('input/x_input:0')
     y_ = sess.graph.get_tensor_by_name('input/y_input:0')
-    name = sess.graph.get_tensor_by_name('tengxing:0')
+    # name = sess.graph.get_tensor_by_name('tengxing:0')
     Weights = sess.graph.get_tensor_by_name('layer/W/Weights:0')
     biases = sess.graph.get_tensor_by_name('layer/b/biases:0')
 
     #W = tf.Variable(tf.zeros([784, 10]), name='Weights')
     #b = tf.Variable(tf.zeros([10]), name='biases')
-    tf.add_to_collection(tf.GraphKeys.VARIABLES, name)
+    # tf.add_to_collection(tf.GraphKeys.VARIABLES, name)
     tf.add_to_collection(tf.GraphKeys.VARIABLES, Weights)
     tf.add_to_collection(tf.GraphKeys.VARIABLES, biases)
     try:
@@ -38,7 +38,7 @@ with tf.Session(graph=graph) as sess:
         pass
     print("load data")
     #print sess.run(name) 此时才有一个Tensor获取变量还要进行赋值
-    saver.restore(sess, "./data/soft.ckpt")  # now OK creted by tengxing
+    saver.restore(sess, "data/soft.ckpt")  # now OK creted by tengxing
     #test
     correct_prediction = tf.equal(tf.argmax(softmax_tensor, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
