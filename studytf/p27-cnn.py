@@ -11,7 +11,7 @@ mnist = input_data.read_data_sets('MNIST_data',one_hot=True)
 
 def compute_accuracy(v_xs,v_ys):
     global prediction
-    y_pre = sess.run(prediction,feed_dict={xs:v_xs})
+    y_pre = sess.run(prediction,feed_dict={xs:v_xs,keep_prob:1})
     correct_prediction = tf.equal(tf.argmax(y_pre,1),tf.argmax(v_ys,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
     result = sess.run(accuracy,feed_dict={xs:v_xs,ys:v_ys})
@@ -42,7 +42,7 @@ def max_pool_2x2(x):
 # define placeholder for inputs to network
 xs = tf.placeholder(tf.float32,[None,784]) # 28x28
 ys = tf.placeholder(tf.float32,[None,10]) # 28x28
-# keep_prob = tf.placeholder(tf.float32)
+keep_prob = tf.placeholder(tf.float32)
 # 第一个值 -1代表了batch ，意思是由多少个图片， 里面含义是有n个28*28， 最后一个数字是（channel,）通道为1的图片， n根据传入的参数自己匹配
 x_image = tf.reshape(xs,[-1,28,28,1])
 # print(x_image.shape) # [n_samples,28,28,1]
@@ -73,13 +73,13 @@ h_pool2_flat = tf.reshape(h_pool2,[-1,7*7*64])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat,W_fc1) + b_fc1)
 
 # 处理过拟合 dropout
-# h_fc1_drop = tf.nn.dropout(h_fc1,keep_prob)
+h_fc1_drop = tf.nn.dropout(h_fc1,keep_prob)
 
 ## func2 layer ##
 W_fc2 = weight_variable([1024, 10])
 b_fc2 = bias_variable([10])
-# prediction = tf.nn.softmax(tf.matmul(h_fc1_drop,W_fc2) + b_fc2) # softmax 算概论 分类
-prediction = tf.nn.softmax(tf.matmul(h_fc1,W_fc2) + b_fc2) # softmax 算概论 分类
+prediction = tf.nn.softmax(tf.matmul(h_fc1_drop,W_fc2) + b_fc2) # softmax 算概论 分类
+# prediction = tf.nn.softmax(tf.matmul(h_fc1,W_fc2) + b_fc2) # softmax 算概论 分类
 
 # the error between prediction and real data
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys*tf.log(prediction),reduction_indices=[1])) #loss 生成分类算法
@@ -92,8 +92,14 @@ sess = tf.Session()
 # important step
 sess.run(tf.global_variables_initializer())
 
-for i in range(1000):
+for i in range(200):
     batch_xs,batch_ys = mnist.train.next_batch(100) # 将数据100个一次进行训练
-    sess.run(train_step,feed_dict={xs:batch_xs,ys:batch_ys})
+    sess.run(train_step,feed_dict={xs:batch_xs,ys:batch_ys,keep_prob:0.5}) # 防止过拟合只在train过程中生效,1为不随机丢掉数据
     if i%50 == 0:
         print(compute_accuracy(mnist.test.images,mnist.test.labels))
+
+# Save
+saver = tf.train.Saver()
+
+save_path = saver.save(sess,'my_net/save_net.ckpt')
+print('Save to path',save_path)
